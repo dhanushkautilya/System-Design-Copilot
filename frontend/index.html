@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design Copilot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    .tab-btn.active {
+      background: #111827;
+      color: white;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 8px;
+      overflow: auto;
+    }
+
+    .info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #334155;
+      font-size: 10px;
+      cursor: help;
+      margin-left: 4px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <header class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold">System Design Copilot</h1>
+        <p class="text-slate-400">LangGraph-powered architect for production-ready systems</p>
+      </div>
+      <button id="download-btn" class="px-4 py-2 rounded bg-emerald-500 text-slate-900 font-semibold" disabled>Download
+        Markdown</button>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <form id="input-form" class="md:col-span-1 space-y-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+        <h2 class="text-xl font-semibold">Input</h2>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-sm">App name <span class="info-btn"
+                title="The name of your application">i</span></label>
+            <input name="app_name" class="w-full p-2 rounded bg-slate-800 border border-slate-700" required />
+          </div>
+          <div>
+            <label class="block text-sm">Budget <span class="info-btn"
+                title="Total infrastructure and team budget level">i</span></label>
+            <select name="budget_level" class="w-full p-2 rounded bg-slate-800 border border-slate-700">
+              <option>low</option>
+              <option selected>medium</option>
+              <option>high</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm">Description <span class="info-btn"
+              title="Briefly describe what the application does">i</span></label>
+          <textarea name="description" rows="2" class="w-full p-2 rounded bg-slate-800 border border-slate-700"
+            required></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-sm">DAU <span class="info-btn" title="Daily Active Users">i</span></label>
+            <input type="number" name="dau" value="10000"
+              class="w-full p-2 rounded bg-slate-800 border border-slate-700" required />
+          </div>
+          <div>
+            <label class="block text-sm">Peak RPS <span class="info-btn"
+                title="Estimated peak Requests Per Second">i</span></label>
+            <input type="number" name="peak_rps" value="250"
+              class="w-full p-2 rounded bg-slate-800 border border-slate-700" required />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-sm">Read/Write Ratio <span class="info-btn"
+                title="Ratio of read operations to write operations (e.g. 10 means 10:1)">i</span></label>
+            <input type="number" step="0.1" name="read_write_ratio" value="4"
+              class="w-full p-2 rounded bg-slate-800 border border-slate-700" required />
+          </div>
+          <div>
+            <label class="block text-sm">Regions (comma) <span class="info-btn"
+                title="Cloud regions to deploy in (e.g. us-east, eu-west)">i</span></label>
+            <input name="regions" value="us-east,us-west"
+              class="w-full p-2 rounded bg-slate-800 border border-slate-700" />
+          </div>
+        </div>
+
+        <details class="bg-slate-800/40 p-3 rounded-lg border border-slate-700 group">
+          <summary class="cursor-pointer text-sm font-semibold text-slate-400 group-open:mb-3">Additional Parameters
+            (Optional)</summary>
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-sm">Domain <span class="info-btn"
+                    title="Industry domain (e.g. fintech, ecom)">i</span></label>
+                <input name="domain" placeholder="fintech"
+                  class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm">End users <span class="info-btn"
+                    title="Target user base type">i</span></label>
+                <input name="end_users" placeholder="consumer"
+                  class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-sm">Traffic pattern <span class="info-btn"
+                    title="Steady vs Spiky traffic usage">i</span></label>
+                <select name="traffic_pattern" class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm">
+                  <option value="steady">steady</option>
+                  <option value="spiky">spiky</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm">Peak Concurrent <span class="info-btn"
+                    title="Estimated max overlapping users">i</span></label>
+                <input type="number" name="peak_concurrent_users"
+                  class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-sm">p95 Latency (ms) <span class="info-btn"
+                    title="Target latency for 95% of requests">i</span></label>
+                <input type="number" name="latency_target_ms_p95" placeholder="300"
+                  class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm">Availability <span class="info-btn"
+                    title="Target uptime (e.g. 0.999 for 99.9%)">i</span></label>
+                <input type="number" step="0.001" name="availability_target" placeholder="0.999"
+                  class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm">Compliance (comma) <span class="info-btn"
+                  title="Regulations to follow (e.g. GDPR, HIPAA)">i</span></label>
+              <input name="compliance" placeholder="GDPR, SOC2"
+                class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm">Data types (comma) <span class="info-btn"
+                  title="Sensitive data handled (e.g. PII, PCI)">i</span></label>
+              <input name="data_types" placeholder="PII, Credentials"
+                class="w-full p-2 rounded bg-slate-900 border border-slate-700 text-sm" />
+            </div>
+          </div>
+        </details>
+
+        <button type="submit" class="w-full py-2 rounded bg-emerald-500 text-slate-900 font-semibold" id="submit-btn"
+          style="margin-top: 1rem;">Generate</button>
+        <p id="status" class="text-sm text-slate-400"></p>
+        <div id="info-modal"
+          class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div class="bg-slate-900 border border-slate-700 p-6 rounded-xl max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg font-bold mb-2">Information</h3>
+            <p id="info-text" class="text-slate-300 text-sm mb-4"></p>
+            <button onclick="document.getElementById('info-modal').classList.add('hidden')"
+              class="w-full py-2 rounded bg-slate-800 hover:bg-slate-700 font-semibold text-sm">Close</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="md:col-span-2">
+        <div class="flex space-x-2 mb-3">
+          <button class="tab-btn px-3 py-2 rounded border border-slate-700" data-target="summary">Summary</button>
+          <button class="tab-btn px-3 py-2 rounded border border-slate-700" data-target="detailed">Detailed</button>
+          <button class="tab-btn px-3 py-2 rounded border border-slate-700" data-target="apis">APIs</button>
+          <button class="tab-btn px-3 py-2 rounded border border-slate-700" data-target="security">Security</button>
+          <button class="tab-btn px-3 py-2 rounded border border-slate-700" data-target="diagrams">Diagrams</button>
+        </div>
+        <div id="panes" class="space-y-4">
+          <div id="summary" class="tab-pane hidden"></div>
+          <div id="detailed" class="tab-pane hidden"></div>
+          <div id="apis" class="tab-pane hidden"></div>
+          <div id="security" class="tab-pane hidden"></div>
+          <div id="diagrams" class="tab-pane hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'dark' });
+    const form = document.getElementById('input-form');
+    const statusEl = document.getElementById('status');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+    const downloadBtn = document.getElementById('download-btn');
+    let lastSubmissionId = null;
+
+    // Info button functionality
+    document.querySelectorAll('.info-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const text = btn.getAttribute('title');
+        document.getElementById('info-text').textContent = text;
+        document.getElementById('info-modal').classList.remove('hidden');
+      });
+    });
+
+    function showTab(id) {
+      panes.forEach(p => p.classList.add('hidden'));
+      tabs.forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelector(`[data-target="${id}"]`).classList.add('active');
+    }
+    tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.target)));
+    showTab('summary');
+
+    function copyBlock(text) {
+      navigator.clipboard.writeText(text);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Generating...';
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const parseList = (v) => v ? v.split(',').map(x => x.trim()).filter(Boolean) : [];
+      const payload = {
+        app_name: data.app_name,
+        description: data.description,
+        dau: Number(data.dau),
+        peak_rps: Number(data.peak_rps),
+        read_write_ratio: Number(data.read_write_ratio),
+        regions: parseList(data.regions),
+        budget_level: data.budget_level,
+        // Optional fields
+        domain: data.domain || null,
+        end_users: data.end_users || null,
+        traffic_pattern: data.traffic_pattern || 'steady',
+        peak_concurrent_users: data.peak_concurrent_users ? Number(data.peak_concurrent_users) : null,
+        latency_target_ms_p95: data.latency_target_ms_p95 ? Number(data.latency_target_ms_p95) : null,
+        availability_target: data.availability_target ? Number(data.availability_target) : null,
+        compliance: parseList(data.compliance),
+        data_types: parseList(data.data_types),
+      };
+      try {
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const out = await res.json();
+        renderOutput(out);
+        statusEl.textContent = 'Done';
+        lastSubmissionId = out.submission_id || null;
+        downloadBtn.disabled = false;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Error: ' + err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    downloadBtn.addEventListener('click', async () => {
+      if (!lastSubmissionId) { alert('Submit first.'); return; }
+      const res = await fetch(`/api/submissions/${lastSubmissionId}/download`);
+      const text = await res.text();
+      const blob = new Blob([text], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'system-design.md'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function bulletList(list) {
+      return '<ul class="list-disc pl-5 space-y-1">' + list.map(x => `<li>${x}</li>`).join('') + '</ul>';
+    }
+
+    function renderOutput(out) {
+      document.getElementById('summary').innerHTML = `
+        <div class="bg-slate-900/60 p-4 rounded border border-slate-800 space-y-3">
+          <div class="flex justify-between items-center"><h3 class="text-xl font-semibold">Architecture Summary</h3>
+            <button class="text-sm underline" onclick="copyBlock('${out.summary.replace(/'/g, "\\'")}')">Copy</button></div>
+          <p class="text-slate-300">${out.summary}</p>
+          <h4 class="font-semibold">Recommendation</h4>
+          <p>${out.recommended_option}</p>
+          <h4 class="font-semibold">Assumptions</h4>
+          ${bulletList(out.assumptions)}
+          <h4 class="font-semibold">Tech Stack</h4>
+          ${bulletList(out.tech_stack)}
+        </div>`;
+
+      const optionsHtml = out.architecture_options.map(opt => `<div><h4 class="font-semibold">${opt.title}</h4>${bulletList(opt.bullets)}</div>`).join('');
+      document.getElementById('detailed').innerHTML = `
+        <div class="bg-slate-900/60 p-4 rounded border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center"><h3 class="text-xl font-semibold">Detailed Report</h3>
+            <button class="text-sm underline" onclick="copyBlock(JSON.stringify(out, null, 2))">Copy JSON</button></div>
+          <h4 class="font-semibold">Architecture Options</h4>
+          ${optionsHtml}
+          <h4 class="font-semibold">Sizing</h4>
+          <pre>${JSON.stringify(out.sizing, null, 2)}</pre>
+          <h4 class="font-semibold">Performance</h4>${bulletList(out.performance_plan)}
+          <h4 class="font-semibold">Reliability</h4>${bulletList(out.reliability_plan)}
+          <h4 class="font-semibold">Observability</h4>${bulletList(out.observability)}
+          <h4 class="font-semibold">Risks</h4>${bulletList(out.risks)}
+          <h4 class="font-semibold">Phased rollout</h4>${bulletList(out.phased_rollout)}
+        </div>`;
+
+      const apiHtml = out.api_design.map(api => `
+        <div class="border border-slate-800 rounded p-3 space-y-2">
+          <div class="flex justify-between"><span class="font-mono bg-slate-800 px-2 py-1 rounded">${api.method} ${api.path}</span>
+            <button class="text-xs underline" onclick='copyBlock(${JSON.stringify(JSON.stringify(api))})'>Copy</button></div>
+          <p class="text-slate-300">${api.description}</p>
+          <p class="text-xs text-slate-400">Rate limit: ${api.rate_limit_rpm || 'N/A'} rpm • Idempotent: ${api.idempotent}</p>
+          <details class="bg-slate-900/60 p-2 rounded"><summary class="cursor-pointer">Payloads</summary>
+            <p class="text-xs text-slate-400">Request</p><pre>${JSON.stringify(api.request, null, 2)}</pre>
+            <p class="text-xs text-slate-400">Response</p><pre>${JSON.stringify(api.response, null, 2)}</pre>
+          </details>
+        </div>`).join('');
+      document.getElementById('apis').innerHTML = `<div class="space-y-3">${apiHtml}</div>`;
+
+      document.getElementById('security').innerHTML = `
+        <div class="bg-slate-900/60 p-4 rounded border border-slate-800 space-y-4">
+          <h3 class="text-xl font-semibold">Security & Threats</h3>
+          <h4 class="font-semibold">Security Plan</h4>${bulletList(out.security_plan)}
+          <h4 class="font-semibold">Threat Model</h4>${bulletList(out.threat_model)}
+        </div>`;
+
+      const diagrams = document.getElementById('diagrams');
+      diagrams.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-slate-900/60 p-3 rounded border border-slate-800"><div class="mermaid">${out.mermaid_flow}</div></div>
+          <div class="bg-slate-900/60 p-3 rounded border border-slate-800"><div class="mermaid">${out.mermaid_components}</div></div>
+        </div>`;
+      mermaid.init(undefined, diagrams.querySelectorAll('.mermaid'));
+    }
+  </script>
+</body>
+
+</html>
